@@ -35,6 +35,18 @@ Note: Replace *bin* with *Scripts* if using windows.
 - Platformio vscode extension to flash firmware to PCBs
 - RS485 converter for MFC
 
+## Flashing Firmware to PCBs (Platformio)
+
+Install the [PlatformIO VSCode Extension](https://docs.platformio.org/en/latest/integration/ide/vscode.html) and open a new Pio terminal (found in *Quick Access/Miscellaneous*). Connect the the target PCB via USB and run the following commands:
+
+```
+cd firmware/loadcell_board
+```
+
+```
+pio run -t upload
+```
+
 ## Hardware References
 
 See [BOM](part_files/BOM.pdf) for complete list.

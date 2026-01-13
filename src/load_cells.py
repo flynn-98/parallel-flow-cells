@@ -58,25 +58,30 @@ class LoadCells:
 
     @skip_if_sim(default_return="0")
     def get_data(self) -> str:
-        while self.ser.in_waiting == 0:
-            pass
+        start = time.time()
 
-        return self.ser.readline().decode().rstrip().replace("\x00", "")
+        while(time.time() - start < self.timeout):
+            if self.ser.in_waiting > 0:
+                break
+
+            time.sleep(0.1)
+        
+        if self.ser.in_waiting == 0:
+             raise RuntimeError("Timed out waiting for response.")
+        else:
+            return self.ser.readline().decode().rstrip().replace("\x00", "")
         
     @skip_if_sim()
     def check_response(self) -> None:
-        start = time.time()
-        while(time.time() - start < self.timeout):
-            data = self.get_data()
-            if data is None:
-                logging.warning("Timed out waiting for response")
-                break
+        data = self.get_data()
+
+        while(1):
             if '#' in data:
-                break
+                return
             elif "Unknown command" in data:
-                raise RuntimeError("Load cell board failed to recognise command: " + data)
+                raise RuntimeError("Controller board failed to recognise command: " + data)
             else:
-                logging.info("Response from load cell board: " + data)
+                logging.info(data)
 
     @skip_if_sim()
     def close_ser(self) -> None:
